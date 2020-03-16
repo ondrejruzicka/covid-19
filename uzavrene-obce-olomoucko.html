@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Uzavřené obce na Olomoucku - COVID-19</title>
+
+  <style type="text/css">
+    #map {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<body>
+
+  <div id="map">
+
+  </div>
+
+
+  <script type="text/javascript">
+
+    var map = L.map('map', {
+      center: [49.6984975, 17.0885833],
+      zoom: 11
+    });
+
+
+    var baseMaps = {
+
+     "Mapy.cz - základní" : L.tileLayer('//m{s}.mapserver.mapy.cz/base-m/{z}-{x}-{y}', {
+      ident: 'mapycz',
+      attribution: '&copy;Seznam.cz a.s., | &copy;OpenStreetMap <a href="//mapy.cz"><img class="print" target="_blank" src="//api.mapy.cz/img/api/logo.svg" style="cursor: pointer; position:relative;top: 5px;"></a>',
+      maxZoom: 18,
+      subdomains: '1234'
+    }),
+
+     "Mapy.cz - ortofoto" : L.tileLayer('//m{s}.mapserver.mapy.cz/bing/{z}-{x}-{y}', {
+      attribution: '&copy;Seznam.cz a.s., | &copy;OpenStreetMap <a href="//mapy.cz"><img class="print" target="_blank" src="//api.mapy.cz/img/api/logo.svg" style="cursor: pointer; position:relative;top: 5px;"></a>',
+      maxZoom: 20,
+      subdomains: '1234'
+    }),
+
+     "Mapy.cz - turistická" : L.tileLayer('//m{s}.mapserver.mapy.cz/turist-m/{z}-{x}-{y}', {
+      attribution: '&copy;Seznam.cz a.s., | &copy;OpenStreetMap <a href="//mapy.cz"><img class="print" target="_blank" src="//api.mapy.cz/img/api/logo.svg" style="cursor: pointer; position:relative;top: 5px;"></a>',
+      maxZoom: 18,
+      subdomains: '1234'
+    })
+   }
+
+   baseMaps[Object.keys(baseMaps)[0]].addTo(map);
+   L.control.layers(baseMaps).addTo(map);
+
+
+   const style = {
+    opacity: 1,
+    fillOpacity: 0.3,
+    lineJoin: 'round',
+    color:'#ff0000',
+    weight: 2,
+    clickable: false
+  };
+
+
+  const ajax = new XMLHttpRequest();
+
+  ajax.open("GET", './covid-uzavrene-obce-olomoucko.geojson', true);
+  ajax.send();
+  ajax.onload = function (e) {
+    L.geoJson(JSON.parse(ajax.responseText), {
+     style: style,
+     onEachFeature: function (feature, layer) {
+       layer.bindPopup('<h3>'+ feature.properties.NAZKU +'</h3>');
+     }
+   }).addTo(map);
+  }
+
+
+
+
+
+      </script>
+
+    </body>
+    </html>
